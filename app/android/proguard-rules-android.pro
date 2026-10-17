@@ -27,6 +27,15 @@
 -dontwarn org.apache.commons.compress.**
 -keep class org.apache.commons.compress.** { *; }
 
+# zstd-jni（payload 的 REPLACE_ZSTD 解压）
+# .so 里的 JNI 实现用 GetFieldID 按「原始字段名」取私有字段（srcPos/dstPos/srcSize/stream…）。
+# `-keepclasseswithmembernames` 只保住 native 方法名，保不住字段名——R8 把它们重命名后
+# native 代码找不到字段，ART 直接 abort（JNI DETECTED ERROR: no "J" field "dstPos"）。
+# 必须整类保留且不许改成员名，否则正式版点「提取」立即崩溃。
+-keep class com.github.luben.zstd.** { *; }
+-keepclassmembers class com.github.luben.zstd.** { <fields>; }
+-dontwarn com.github.luben.zstd.**
+
 # Kotlin Coroutines
 -dontwarn kotlinx.coroutines.**
 
