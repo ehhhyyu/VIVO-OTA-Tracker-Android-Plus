@@ -362,6 +362,9 @@ class VivoPayloadViewModel : ViewModel() {
             markDownloading(partitionInfo.partitionName, false)
             return saved
         } catch (e: Exception) {
+            // 只给「提取失败」会把「不支持的操作类型」「数据截断」等可行动原因一起吞掉，
+            // 用户无法判断是包的问题还是工具的问题。
+            Log.e("VivoPayload", "extract ${partitionInfo.partitionName} failed", e)
             markDownloading(partitionInfo.partitionName, false)
             return false
         }

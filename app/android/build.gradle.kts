@@ -24,6 +24,9 @@ dependencies {
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    // payload 的 REPLACE_ZSTD 操作需要 zstd 解压（AOSP Android 14+ 起使用）。
+    // 必须显式取 aar 变体：普通 jar 不含 jni/*.so，运行时会因找不到本地库而崩溃。
+    implementation("com.github.luben:zstd-jni:${libs.versions.zstd.jni.get()}@aar")
     implementation(libs.okhttp)
 }
 

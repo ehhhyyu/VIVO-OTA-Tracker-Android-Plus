@@ -53,6 +53,10 @@ message InstallOperation {
     ZUCCHINI = 11;
     LZ4DIFF_BSDIFF = 12;
     LZ4DIFF_PUFFDIFF = 13;
+    // AOSP 新版本（Android 14+）新增，vivo 近期 OTA 包大量使用。
+    // 缺这一项时 proto2 会把未知枚举值 14 丢弃成默认 REPLACE=0，
+    // 提取时把 zstd 压缩流原样写进镜像，产出大小与内容全错。
+    REPLACE_ZSTD = 14;
   }
   optional Type type = 1;
   optional uint64 data_offset = 2;
