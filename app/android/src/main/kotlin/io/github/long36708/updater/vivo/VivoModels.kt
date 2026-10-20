@@ -26,6 +26,31 @@ data class VivoOtaResult(
     val rawResponse: String = ""
 )
 
+/** 链式升级路径的一跳终止类型。 */
+enum class ChainTerminal {
+    /** 该跳返回了更新的版本，链路继续。 */
+    CONTINUES,
+
+    /** 返回版本与查询版本相同：已是顶版（重装包形态）。 */
+    TOP_REINSTALL,
+
+    /** 服务器不再返回更新。 */
+    NO_UPDATE,
+
+    /** 达到跳数上限，链路被截断。 */
+    LIMIT,
+
+    /** 返回的版本在本链路中已出现过（防异常回环）。 */
+    LOOP
+}
+
+/** 链式升级路径的单跳：baseVersion 查询 → result（可为 null，表示无更新）。 */
+data class OtaChainStep(
+    val baseVersion: String,
+    val result: VivoOtaResult?,
+    val terminal: ChainTerminal
+)
+
 data class QueryHistoryEntry(
     val timestamp: Long,
     val model: String,
@@ -70,6 +95,8 @@ data class VivoOtaUiState(
     val queryChannel: String = "NORMAL",
     val queryDomain: String = "CN",
     val isLoading: Boolean = false,
+    val isChainLoading: Boolean = false,
+    val chainSteps: List<OtaChainStep> = emptyList(),
     val result: VivoOtaResult? = null,
     val error: String? = null,
     val cryptoReady: Boolean = false,

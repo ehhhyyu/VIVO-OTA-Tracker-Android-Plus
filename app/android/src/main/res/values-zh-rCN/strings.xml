@@ -46,6 +46,7 @@
     <!-- Query -->
     <string name="btn_query">查询 OTA 更新</string>
     <string name="querying">查询中\u2026</string>
+    <string name="btn_chain">查询升级路径</string>
 
     <!-- Result -->
     <string name="query_failed">查询失败: %1$s</string>
@@ -69,6 +70,17 @@
     <!-- Changelog -->
     <string name="changelog_title">更新日志</string>
     <string name="loading">加载中\u2026</string>
+
+    <!-- Chain upgrade path -->
+    <string name="chain_title">升级路径 (%1$d)</string>
+    <string name="chain_querying">链式查询中\u2026</string>
+    <string name="chain_empty_hint">暂无查询结果。</string>
+    <string name="chain_top">已到顶版（重装包形态）。</string>
+    <string name="chain_no_update">后续无更新。</string>
+    <string name="chain_limit">已达跳数上限，链路截断。</string>
+    <string name="chain_loop">已停止：检测到版本回环。</string>
+    <string name="chain_copy">复制路径</string>
+    <string name="chain_copy_header">从 %1$s 起的升级路径：</string>
 
     <!-- History -->
     <string name="history_title">查询历史 (%1$d)</string>
