@@ -430,26 +430,28 @@
       "codename": "PD2602",
       "model_sw_ver": "V2602A",
       "default_sw_version": "17.0.11.45.W10",
-      "optional_sw_versions": ["17.0.11.45.W10"]
+      "optional_sw_versions": ["17.0.14.3.W10","17.0.11.45.W10"]
     },
     {
       "model": "vivo X500 Pro Max卫星通信版",
       "codename": "PD2602",
       "model_sw_ver": "V2602DA",
       "default_sw_version": "17.0.11.45.W10",
-      "optional_sw_versions": ["17.0.11.45.W10"]
+      "optional_sw_versions": ["17.0.14.3.W10","17.0.11.45.W10"]
     },
     {
       "model": "vivo X500 Pro",
       "codename": "PD2608",
-      "model_sw_ver": "V2608A"
+      "model_sw_ver": "V2608A",
+      "default_sw_version": "17.0.11.45.W10",
+      "optional_sw_versions": ["17.0.14.3.W10","17.0.11.45.W10"]
     },
     {
       "model": "vivo X500",
       "codename": "PD2609",
       "model_sw_ver": "V2609A",
       "default_sw_version": "17.0.12.11.W10",
-      "optional_sw_versions": ["17.0.11.52.W10","17.0.12.11.W10","17.0.12.14.W10"]
+      "optional_sw_versions": ["17.0.14.9.W10","17.0.11.52.W10","17.0.12.11.W10","17.0.12.14.W10"]
     }
   ],
   "S 系列": [
