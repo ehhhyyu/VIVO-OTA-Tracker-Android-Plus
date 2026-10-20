@@ -69,7 +69,7 @@ This project is for technical learning and communication purposes only. Do not u
 | Role | Info |
 |------|------|
 | Developer | [mytiantian001](https://www.coolapk.com/u/4430874) |
-| Co-Author | [longmo](https://github.com/long36708) |
+| Co-Author | [ℳℓ矜ℳℓ持](https://github.com/long36708) ([Coolapk](https://www.coolapk.com/u/922815)) |
 | Source Repository | [long36708/VIVO-OTA-Tracker-Android-Plus](https://github.com/long36708/VIVO-OTA-Tracker-Android-Plus) |
 | Reference Project | [YuKongA / Updater-KMP](https://github.com/YuKongA/Updater-KMP) |
 
@@ -82,4 +82,4 @@ This project is for technical learning and communication purposes only. Do not u
 
 ---
 
-© 2026 mytiantian001 · longmo
+© 2026 mytiantian001 · ℳℓ矜ℳℓ持

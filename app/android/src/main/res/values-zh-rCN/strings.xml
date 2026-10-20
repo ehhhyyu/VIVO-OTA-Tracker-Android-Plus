@@ -99,7 +99,6 @@
     <!-- About -->
     <string name="about_developer">开发者</string>
     <string name="about_original_author">原项目作者</string>
-    <string name="about_coauthor">共同作者</string>
     <string name="about_reference">参考项目</string>
     <string name="about_source">源码仓库</string>
     <string name="about_disclaimer">本应用仅供学习研究使用</string>
