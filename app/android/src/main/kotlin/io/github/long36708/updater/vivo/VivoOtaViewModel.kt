@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.long36708.updater.AndroidAppContext
 import io.github.long36708.updater.R
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,11 +24,17 @@ import java.util.Locale
 
 class VivoOtaViewModel : ViewModel() {
 
+    companion object {
+        /** 链式查询跳数上限：防服务器返回异常导致无限跳。 */
+        private const val MAX_CHAIN_HOPS = 15
+    }
+
     private val _uiState = MutableStateFlow(VivoOtaUiState())
     val uiState: StateFlow<VivoOtaUiState> = _uiState.asStateFlow()
 
     private val client: VivoOtaClient
     private val prefs: android.content.SharedPreferences
+    private var chainJob: Job? = null
 
     init {
         val ctx = AndroidAppContext.getApplicationContext()
@@ -427,28 +436,52 @@ class VivoOtaViewModel : ViewModel() {
 
     /** 检索条件变化后，旧结果/旧错误不再可信，立即清除避免误导。 */
     private fun clearStaleQueryResult() {
-        _uiState.update { it.copy(result = null, error = null) }
+        _uiState.update { it.copy(result = null, error = null, chainSteps = emptyList()) }
+    }
+
+    /** 机型选择解析结果（手动/普通模式统一出口）。 */
+    private data class DeviceSelection(val codename: String, val modelSwVer: String, val modelName: String)
+
+    /**
+     * 按手动/普通模式解析当前选中的机型三元组；codename 为空时返回 null（视为未选机型）。
+     * 单查与链式查询共用，避免两处各写一份解析逻辑。
+     */
+    private fun resolveDeviceSelection(state: VivoOtaUiState): DeviceSelection? {
+        return if (state.manualMode) {
+            val codename = state.manualCodename.trim()
+            if (codename.isEmpty()) return null
+            DeviceSelection(
+                codename = codename,
+                modelSwVer = state.manualModelSwVer.trim(),
+                modelName = state.manualModelName.trim().ifEmpty { codename }
+            )
+        } else {
+            val codename = state.selectedCodename
+            if (codename.isEmpty()) return null
+            DeviceSelection(
+                codename = codename,
+                modelSwVer = state.selectedModelSwVer,
+                modelName = state.selectedModel
+            )
+        }
+    }
+
+    /**
+     * 把响应里的长版本（如 `16.1.12.40.W10.V000L1`）还原成可再次查询的基础版本（`16.1.12.40.W10`）。
+     * client 内部对含 `.W` 的入参会再拼一次 `.V000L1`，故喂回前必须去掉，否则版本串越拼越长。
+     */
+    private fun normalizeQueryVersion(updateVersion: String): String {
+        Regex("^(.*\\.W\\d+)").find(updateVersion)?.groupValues?.getOrNull(1)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { return it }
+        return updateVersion.removeSuffix(".V000L1")
     }
 
     fun query() {
         val state = _uiState.value
         if (!state.cryptoReady) return
 
-        val codename: String
-        val modelSwVer: String
-        val modelName: String
-
-        if (state.manualMode) {
-            codename = state.manualCodename.trim()
-            modelSwVer = state.manualModelSwVer.trim()
-            modelName = state.manualModelName.trim().ifEmpty { codename }
-            if (codename.isEmpty()) return
-        } else {
-            codename = state.selectedCodename
-            modelSwVer = state.selectedModelSwVer
-            modelName = state.selectedModel
-            if (codename.isEmpty()) return
-        }
+        val sel = resolveDeviceSelection(state) ?: return
         if (state.softwareVersion.isEmpty()) return
 
         _uiState.update { it.copy(isLoading = true, error = null, result = null) }
@@ -456,8 +489,8 @@ class VivoOtaViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = client.query(
-                    codename = codename,
-                    modelSwVer = modelSwVer,
+                    codename = sel.codename,
+                    modelSwVer = sel.modelSwVer,
                     swVersion = state.softwareVersion,
                     androidVersion = state.androidVersion,
                     isPhone = state.deviceType == "phone",
@@ -476,8 +509,8 @@ class VivoOtaViewModel : ViewModel() {
                 if (hasUpdate) {
                     val ctx = AndroidAppContext.getApplicationContext()!!
                     addToHistory(
-                        model = modelName,
-                        codename = codename,
+                        model = sel.modelName,
+                        codename = sel.codename,
                         swVersion = state.softwareVersion,
                         result = result,
                         querySoftwareVersion = state.softwareVersion,
@@ -512,6 +545,95 @@ class VivoOtaViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    /**
+     * 升级路径链式查询：从当前表单版本起，拿每跳响应的版本回喂再查，逐跳直到顶版/无更新/上限。
+     * 结果只进 chainSteps，不写查询历史、不占用单查 result。
+     */
+    fun chainQuery() {
+        val state = _uiState.value
+        if (!state.cryptoReady) return
+        if (state.isLoading || state.isChainLoading) return
+
+        val sel = resolveDeviceSelection(state) ?: return
+        if (state.softwareVersion.isEmpty()) return
+
+        _uiState.update {
+            it.copy(isChainLoading = true, error = null, result = null, chainSteps = emptyList())
+        }
+
+        chainJob = viewModelScope.launch(Dispatchers.IO) {
+            val steps = mutableListOf<OtaChainStep>()
+            val seen = linkedSetOf<String>()
+            var base = state.softwareVersion.trim()
+            seen.add(base)
+            try {
+                while (isActive) {
+                    val result = client.query(
+                        codename = sel.codename,
+                        modelSwVer = sel.modelSwVer,
+                        swVersion = base,
+                        androidVersion = state.androidVersion,
+                        isPhone = state.deviceType == "phone",
+                        isFull = state.isFullPackage,
+                        sn = state.sn,
+                        imei = state.imei,
+                        channel = VivoOtaClient.QueryChannel.valueOf(state.queryChannel),
+                        domain = VivoOtaClient.Domain.valueOf(state.queryDomain)
+                    )
+
+                    val rawUpdate = result.updateVersion
+                    val hasUpdate = rawUpdate.isNotEmpty() &&
+                            rawUpdate != "(Not found)" &&
+                            result.filename.isNotEmpty() &&
+                            result.filename != "(Not found)"
+
+                    val terminal: ChainTerminal = when {
+                        !hasUpdate -> ChainTerminal.NO_UPDATE
+                        else -> {
+                            val next = normalizeQueryVersion(rawUpdate)
+                            when {
+                                next == base -> ChainTerminal.TOP_REINSTALL
+                                next in seen -> ChainTerminal.LOOP
+                                steps.size + 1 >= MAX_CHAIN_HOPS -> ChainTerminal.LIMIT
+                                else -> ChainTerminal.CONTINUES
+                            }
+                        }
+                    }
+
+                    steps.add(OtaChainStep(base, result, terminal))
+                    _uiState.update { it.copy(chainSteps = steps.toList()) }
+
+                    if (terminal != ChainTerminal.CONTINUES) break
+
+                    // 进入下一跳：把响应版本（去尾）作为新的基础版本
+                    base = normalizeQueryVersion(rawUpdate)
+                    seen.add(base)
+                }
+            } catch (e: CancellationException) {
+                // 用户主动取消：保留已拿到的跳数，正常走 finally 收尾
+            } catch (e: Exception) {
+                Log.e("VivoOtaViewModel", "Chain query failed", e)
+                if (steps.isEmpty()) {
+                    _uiState.update { it.copy(error = e.message ?: "Unknown error") }
+                } else {
+                    // 链路已拿到部分跳数：追加一条无结果的「中断」步，提示后续查询失败
+                    steps.add(OtaChainStep(base, null, ChainTerminal.NO_UPDATE))
+                    _uiState.update { it.copy(chainSteps = steps.toList()) }
+                }
+            } finally {
+                _uiState.update { it.copy(isChainLoading = false) }
+                chainJob = null
+            }
+        }
+    }
+
+    /** 取消链式查询：保留已拿到的跳数，停止后续查询。 */
+    fun cancelChainQuery() {
+        chainJob?.cancel()
+        chainJob = null
+        _uiState.update { it.copy(isChainLoading = false) }
     }
 
     private fun addToHistory(

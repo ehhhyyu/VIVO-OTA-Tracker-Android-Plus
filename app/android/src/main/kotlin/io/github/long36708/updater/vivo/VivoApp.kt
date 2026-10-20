@@ -222,6 +222,11 @@ fun VivoApp(viewModel: VivoOtaViewModel = viewModel()) {
                 }
 
                 state.error?.let { err -> item { ErrorCard(err) } }
+                if (state.isChainLoading || state.chainSteps.isNotEmpty()) {
+                    item(key = "chain") {
+                        ChainPathCard(state)
+                    }
+                }
                 state.result?.let { result ->
                     item(key = "result") {
                         var visible by remember { mutableStateOf(false) }
@@ -798,17 +803,30 @@ private fun ChannelCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
 @Composable
 private fun QueryButton(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
     val codename = if (state.manualMode) state.manualCodename else state.selectedCodename
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+    val canQuery = state.cryptoReady && codename.isNotEmpty() && state.softwareVersion.isNotEmpty()
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = { viewModel.query() },
-            enabled = state.cryptoReady && !state.isLoading && codename.isNotEmpty() && state.softwareVersion.isNotEmpty(),
+            enabled = canQuery && !state.isLoading && !state.isChainLoading,
             colors = ButtonDefaults.buttonColorsPrimary()
         ) {
             if (state.isLoading) {
                 Text(stringResource(R.string.querying))
             } else {
                 Text(stringResource(R.string.btn_query))
+            }
+        }
+        // 链式查询中按钮变「取消」，随时中断并保留已拿到的跳数
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { if (state.isChainLoading) viewModel.cancelChainQuery() else viewModel.chainQuery() },
+            enabled = if (state.isChainLoading) true else canQuery && !state.isLoading
+        ) {
+            if (state.isChainLoading) {
+                Text(stringResource(R.string.btn_cancel))
+            } else {
+                Text(stringResource(R.string.btn_chain))
             }
         }
     }
@@ -822,6 +840,182 @@ private fun ErrorCard(error: String) {
             color = Color(0xFFE53935),
             modifier = Modifier.padding(16.dp)
         )
+    }
+}
+
+/** 链式跳的终止说明文案（普通函数：复制回调等非组合上下文也要能用）。 */
+private fun chainTerminalText(context: Context, terminal: ChainTerminal): String = when (terminal) {
+    ChainTerminal.CONTINUES -> ""
+    ChainTerminal.TOP_REINSTALL -> context.getString(R.string.chain_top)
+    ChainTerminal.NO_UPDATE -> context.getString(R.string.chain_no_update)
+    ChainTerminal.LIMIT -> context.getString(R.string.chain_limit)
+    ChainTerminal.LOOP -> context.getString(R.string.chain_loop)
+}
+
+@Composable
+private fun ChainPathCard(state: VivoOtaUiState) {
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+    val copiedMsg = stringResource(R.string.copied)
+    val steps = state.chainSteps
+    var expanded by remember { mutableStateOf(true) }
+    val copyHeader = stringResource(R.string.chain_copy_header, state.softwareVersion)
+
+    fun copyChain() {
+        val sb = StringBuilder()
+        sb.appendLine(copyHeader)
+        steps.forEach { step ->
+            val upd = step.result?.updateVersion.orEmpty()
+            val size = step.result?.fileSizeMb.orEmpty()
+            val line = if (upd.isEmpty() || upd == "(Not found)") {
+                "${step.baseVersion} → (${chainTerminalText(context, step.terminal)})"
+            } else {
+                "${step.baseVersion} → $upd" + if (size.isNotEmpty()) " · ${size}MB" else ""
+            }
+            sb.appendLine(line)
+        }
+        steps.lastOrNull()?.let { last ->
+            val t = chainTerminalText(context, last.terminal)
+            if (t.isNotEmpty()) sb.appendLine(t)
+        }
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cb.setPrimaryClip(ClipData.newPlainText("upgradePath", sb.toString().trim()))
+        Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
+    }
+
+    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.padding(horizontal = 16.dp, vertical = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.chain_title, steps.size),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = if (expanded) " ▾" else " ▸",
+                        fontSize = 14.sp,
+                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+                }
+                if (state.isChainLoading) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        CircularProgressIndicator(modifier = Modifier.size(14.dp))
+                        Text(
+                            stringResource(R.string.chain_querying),
+                            fontSize = 12.sp,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(
+                visible = expanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    HorizontalDivider()
+                    if (steps.isEmpty()) {
+                        Text(
+                            stringResource(R.string.chain_empty_hint),
+                            fontSize = 13.sp,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    } else {
+                        steps.forEachIndexed { index, step ->
+                            if (index > 0) HorizontalDivider()
+                            val res = step.result
+                            val upd = res?.updateVersion.orEmpty()
+                            val size = res?.fileSizeMb.orEmpty()
+                            val fname = res?.filename.orEmpty()
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = {},
+                                        onLongClick = {
+                                            if (upd.isNotEmpty() && upd != "(Not found)") {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                                cb.setPrimaryClip(ClipData.newPlainText("version", upd))
+                                                Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "${index + 1}.",
+                                        fontSize = 12.sp,
+                                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
+                                    Text(
+                                        text = if (upd.isEmpty() || upd == "(Not found)") {
+                                            step.baseVersion
+                                        } else {
+                                            "${step.baseVersion} → $upd"
+                                        },
+                                        fontSize = 14.sp
+                                    )
+                                }
+                                val detail = buildString {
+                                    if (size.isNotEmpty()) append("${size}MB")
+                                    if (fname.isNotEmpty() && fname != "(Not found)") {
+                                        if (isNotEmpty()) append(" · ")
+                                        append(fname)
+                                    }
+                                }
+                                if (detail.isNotEmpty()) {
+                                    Text(
+                                        text = detail,
+                                        fontSize = 12.sp,
+                                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
+                                val terminal = chainTerminalText(context, step.terminal)
+                                if (terminal.isNotEmpty()) {
+                                    Text(
+                                        text = terminal,
+                                        fontSize = 12.sp,
+                                        color = MiuixTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (!state.isChainLoading && steps.isNotEmpty()) {
+                        HorizontalDivider()
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.chain_copy),
+                                color = MiuixTheme.colorScheme.primary,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                                    .clickable { copyChain() }
+                                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

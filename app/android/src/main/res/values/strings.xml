@@ -51,6 +51,7 @@
     <!-- Query -->
     <string name="btn_query">Query OTA Update</string>
     <string name="querying">Querying\u2026</string>
+    <string name="btn_chain">Query Upgrade Path</string>
 
     <!-- Result -->
     <string name="query_failed">Query failed: %1$s</string>
@@ -74,6 +75,17 @@
     <!-- Changelog -->
     <string name="changelog_title">Changelog</string>
     <string name="loading">Loading\u2026</string>
+
+    <!-- Chain upgrade path -->
+    <string name="chain_title">Upgrade path (%1$d)</string>
+    <string name="chain_querying">Chaining\u2026</string>
+    <string name="chain_empty_hint">No hops yet.</string>
+    <string name="chain_top">Reached the latest version (reinstall package).</string>
+    <string name="chain_no_update">No further update.</string>
+    <string name="chain_limit">Stopped at hop limit.</string>
+    <string name="chain_loop">Stopped: version loop detected.</string>
+    <string name="chain_copy">Copy path</string>
+    <string name="chain_copy_header">Upgrade path from %1$s:</string>
 
     <!-- History -->
     <string name="history_title">Query history (%1$d)</string>
