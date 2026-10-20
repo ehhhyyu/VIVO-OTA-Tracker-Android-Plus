@@ -1,4 +1,4 @@
-# VIVO OTA Tracker (Android)
+# VIVO OTA Tracker Plus (Android)
 
 VIVO OTA Tracker is an open-source Android app that fetches official OTA firmware download links for various VIVO / iQOO devices directly from official servers.
 
@@ -69,6 +69,8 @@ This project is for technical learning and communication purposes only. Do not u
 | Role | Info |
 |------|------|
 | Developer | [mytiantian001](https://www.coolapk.com/u/4430874) |
+| Co-Author | [longmo](https://github.com/long36708) |
+| Source Repository | [long36708/VIVO-OTA-Tracker-Android-Plus](https://github.com/long36708/VIVO-OTA-Tracker-Android-Plus) |
 | Reference Project | [YuKongA / Updater-KMP](https://github.com/YuKongA/Updater-KMP) |
 
 ---
@@ -80,4 +82,4 @@ This project is for technical learning and communication purposes only. Do not u
 
 ---
 
-© 2026 mytiantian001
+© 2026 mytiantian001 · longmo

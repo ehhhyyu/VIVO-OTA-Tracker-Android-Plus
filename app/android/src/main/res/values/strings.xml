@@ -104,6 +104,7 @@
     <!-- About -->
     <string name="about_developer">Developer</string>
     <string name="about_original_author">Original Author</string>
+    <string name="about_coauthor">Co-Author</string>
     <string name="about_reference">Reference Project</string>
     <string name="about_source">Source Repository</string>
     <string name="about_disclaimer">This app is for educational and research purposes only.</string>

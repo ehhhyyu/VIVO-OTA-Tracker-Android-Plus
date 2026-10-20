@@ -1554,6 +1554,24 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
+                    Text(stringResource(R.string.about_coauthor), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("longmo", fontSize = 13.sp)
+                    Text(
+                        text = "GitHub @long36708",
+                        color = MiuixTheme.colorScheme.primary,
+                        fontSize = 12.sp,
+                        modifier = Modifier.combinedClickable(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/long36708"))) },
+                            onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                cb.setPrimaryClip(ClipData.newPlainText("url", "https://github.com/long36708"))
+                                Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
                     Text("ℳℓ矜ℳℓ持", fontSize = 13.sp)
                     Text(
                         text = "Coolapk @ℳℓ矜ℳℓ持",
