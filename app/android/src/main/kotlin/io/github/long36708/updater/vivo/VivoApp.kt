@@ -711,19 +711,19 @@ private fun ImeiInputCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
 private fun PackageTypeCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
     val fullPkg = stringResource(R.string.pkg_full)
     val incrementalPkg = stringResource(R.string.pkg_incremental)
-    // 尝鲜 / 公测 / 内测通道仅允许增量包
-    val packageLocked = state.queryChannel != "NORMAL"
+    // 非官方通道（尝鲜 / 公测 / 内测）下默认增量包，但允许手动切换为全量包
+    val defaultIncremental = state.queryChannel != "NORMAL"
     val lockHint = stringResource(R.string.pkg_locked_incremental)
     Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
         OverlayDropdownPreference(
             title = stringResource(R.string.label_package_type),
             items = listOf(fullPkg, incrementalPkg),
             selectedIndex = if (state.isFullPackage) 0 else 1,
-            onSelectedIndexChange = { if (!packageLocked) viewModel.togglePackageType() },
-            enabled = !packageLocked,
+            onSelectedIndexChange = { viewModel.togglePackageType() },
+            enabled = true,
             modifier = Modifier.fillMaxWidth()
         )
-        if (packageLocked) {
+        if (defaultIncremental) {
             Text(
                 text = lockHint,
                 fontSize = 12.sp,

@@ -302,7 +302,8 @@ class VivoOtaViewModel : ViewModel() {
     }
     fun updateQueryChannel(channel: String) {
         _uiState.update {
-            // 尝鲜 / 公测 / 内测通道仅支持增量包，强制锁定为增量
+            // 切换到非官方通道（尝鲜 / 公测 / 内测）时包类型默认回到增量包，
+            // 用户可随后手动切换为全量包
             if (channel != "NORMAL") {
                 it.copy(queryChannel = channel, isFullPackage = false)
             } else {
@@ -324,8 +325,9 @@ class VivoOtaViewModel : ViewModel() {
     }
     fun togglePackageType() {
         _uiState.update {
-            // 尝鲜 / 公测 / 内测通道下禁止切换包类型，始终保持增量
-            if (it.queryChannel != "NORMAL") it else it.copy(isFullPackage = !it.isFullPackage)
+            // 允许在所有通道下手动切换包类型：非官方通道默认增量包，
+            // 但用户可手动切到全量包
+            it.copy(isFullPackage = !it.isFullPackage)
         }
         clearStaleQueryResult()
     }
