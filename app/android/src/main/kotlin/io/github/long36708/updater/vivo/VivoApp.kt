@@ -1606,15 +1606,15 @@ private fun AboutDialog(onDismiss: () -> Unit) {
 
                     Text(stringResource(R.string.about_source), fontSize = 13.sp, fontWeight = FontWeight.Bold)
                     Text(
-                        text = "VIVO-OTA-Tracker-Android",
+                        text = "VIVO-OTA-Tracker-Android-Plus",
                         color = MiuixTheme.colorScheme.primary,
                         fontSize = 12.sp,
                         modifier = Modifier.combinedClickable(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/mytiantian001/VIVO-OTA-Tracker-Android"))) },
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/long36708/VIVO-OTA-Tracker-Android-Plus"))) },
                             onLongClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                cb.setPrimaryClip(ClipData.newPlainText("url", "https://github.com/mytiantian001/VIVO-OTA-Tracker-Android"))
+                                cb.setPrimaryClip(ClipData.newPlainText("url", "https://github.com/long36708/VIVO-OTA-Tracker-Android-Plus"))
                                 Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
                             }
                         )
