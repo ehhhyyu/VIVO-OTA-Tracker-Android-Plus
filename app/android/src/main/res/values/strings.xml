@@ -86,6 +86,7 @@
     <string name="chain_loop">Stopped: version loop detected.</string>
     <string name="chain_copy">Copy path</string>
     <string name="chain_copy_header">Upgrade path from %1$s:</string>
+    <string name="chain_query_target">Query this</string>
 
     <!-- History -->
     <string name="history_title">Query history (%1$d)</string>

@@ -224,7 +224,7 @@ fun VivoApp(viewModel: VivoOtaViewModel = viewModel()) {
                 state.error?.let { err -> item { ErrorCard(err) } }
                 if (state.isChainLoading || state.chainSteps.isNotEmpty()) {
                     item(key = "chain") {
-                        ChainPathCard(state)
+                        ChainPathCard(state, viewModel)
                     }
                 }
                 state.result?.let { result ->
@@ -856,7 +856,7 @@ private fun chainTerminalText(context: Context, terminal: ChainTerminal): String
 }
 
 @Composable
-private fun ChainPathCard(state: VivoOtaUiState) {
+private fun ChainPathCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val copiedMsg = stringResource(R.string.copied)
@@ -957,21 +957,44 @@ private fun ChainPathCard(state: VivoOtaUiState) {
                                     .padding(horizontal = 16.dp, vertical = 10.dp),
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = "${index + 1}.",
-                                        fontSize = 12.sp,
-                                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                    Text(
-                                        text = if (upd.isEmpty() || upd == "(Not found)") {
-                                            step.baseVersion
-                                        } else {
-                                            "${step.baseVersion} → $upd"
-                                        },
-                                        fontSize = 14.sp
-                                    )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        modifier = Modifier.weight(1f, fill = false),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "${index + 1}.",
+                                            fontSize = 12.sp,
+                                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                        Text(
+                                            text = if (upd.isEmpty() || upd == "(Not found)") {
+                                                step.baseVersion
+                                            } else {
+                                                "${step.baseVersion} → $upd"
+                                            },
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                    // 链式进行中不允许再触发单查；无更新结果的目标也没得查
+                                    if (!state.isChainLoading && upd.isNotEmpty() && upd != "(Not found)") {
+                                        Text(
+                                            text = stringResource(R.string.chain_query_target),
+                                            fontSize = 12.sp,
+                                            color = MiuixTheme.colorScheme.primary,
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .clickable {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    viewModel.queryChainTarget(upd)
+                                                }
+                                        )
+                                    }
                                 }
                                 val detail = buildString {
                                     if (size.isNotEmpty()) append("${size}MB")

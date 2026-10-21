@@ -81,6 +81,7 @@
     <string name="chain_loop">已停止：检测到版本回环。</string>
     <string name="chain_copy">复制路径</string>
     <string name="chain_copy_header">从 %1$s 起的升级路径：</string>
+    <string name="chain_query_target">查此版本</string>
 
     <!-- History -->
     <string name="history_title">查询历史 (%1$d)</string>

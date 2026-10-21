@@ -636,6 +636,21 @@ class VivoOtaViewModel : ViewModel() {
         _uiState.update { it.copy(isChainLoading = false) }
     }
 
+    /**
+     * 链式路径行上的「查此版本」：把目标版本（剥掉 .V000L1）回填为表单基准版本并立即单查。
+     * 与手动改版本号同语义（置 custom 脏标记）；路径卡片保留，方便逐跳对照查询。
+     */
+    fun queryChainTarget(updateVersion: String) {
+        val state = _uiState.value
+        if (state.isLoading || state.isChainLoading) return
+        if (!state.cryptoReady) return
+        val target = normalizeQueryVersion(updateVersion.trim())
+        if (target.isEmpty() || target == "(Not found)") return
+        applySwVersion(target)
+        _uiState.update { it.copy(isSwVersionCustom = true) }
+        query()
+    }
+
     private fun addToHistory(
         model: String,
         codename: String,
