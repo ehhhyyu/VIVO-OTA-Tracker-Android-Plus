@@ -534,10 +534,13 @@ private fun AndroidVersionCard(state: VivoOtaUiState, viewModel: VivoOtaViewMode
                 items = androidVersions,
                 selectedIndex = androidIndex,
                 onSelectedIndexChange = {
-                    if (it == 4) {
-                        viewModel.selectCustomAndroidVersion()
+                    // 按选中项内容判断而非下标：硬编码下标在列表增删版本项后会整体错位
+                    // （曾导致选「17」误入自定义分支、选「自定义」toInt() 崩溃）
+                    val picked = androidVersions[it].toIntOrNull()
+                    if (picked != null) {
+                        viewModel.updateAndroidVersion(picked)
                     } else {
-                        viewModel.updateAndroidVersion(androidVersions[it].toInt())
+                        viewModel.selectCustomAndroidVersion()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
