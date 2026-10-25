@@ -221,7 +221,8 @@
     {
       "model": "vivo X90",
       "codename": "PD2241",
-      "model_sw_ver": "V2241A"
+      "model_sw_ver": "V2241A",
+      "default_sw_version": "13.0.6.10.W10"
     },
     {
       "model": "vivo X90s",
@@ -232,22 +233,26 @@
     {
       "model": "vivo X90 Pro",
       "codename": "PD2242",
-      "model_sw_ver": "V2242A"
+      "model_sw_ver": "V2242A",
+      "default_sw_version": "13.0.11.8.W10"
     },
     {
       "model": "vivo X90 Pro+",
       "codename": "PD2227",
-      "model_sw_ver": "V2227A"
+      "model_sw_ver": "V2227A",
+      "default_sw_version": "13.0.6.2.W10"
     },
     {
       "model": "vivo X Fold2",
       "codename": "PD2266",
-      "model_sw_ver": "V2266A"
+      "model_sw_ver": "V2266A",
+      "default_sw_version": "13.0.6.2.W10"
     },
     {
       "model": "vivo X Flip",
       "codename": "PD2256",
-      "model_sw_ver": "V2256A"
+      "model_sw_ver": "V2256A",
+      "default_sw_version": "13.0.9.6.W10"
     },
     {
       "model": "vivo X100",
@@ -357,7 +362,8 @@
     {
       "model": "vivo X200s",
       "codename": "PD2458",
-      "model_sw_ver": "V2458A"
+      "model_sw_ver": "V2458A",
+      "default_sw_version": "15.0.23.2.W10"
     },
     {
       "model": "vivo X200 Ultra",
@@ -376,7 +382,8 @@
     {
       "model": "vivo X Fold5",
       "codename": "PD2436",
-      "model_sw_ver": "V2436A"
+      "model_sw_ver": "V2436A",
+      "default_sw_version": "15.0.8.2.W10"
     },
     {
       "model": "vivo X Fold6",
@@ -569,22 +576,26 @@
     {
       "model": "vivo S16",
       "codename": "PD2244",
-      "model_sw_ver": "V2244A"
+      "model_sw_ver": "V2244A",
+      "default_sw_version": "13.0.1.8.W10"
     },
     {
       "model": "vivo S16 Pro",
       "codename": "PD2245",
-      "model_sw_ver": "V2245A"
+      "model_sw_ver": "V2245A",
+      "default_sw_version": "13.0.4.1.W10"
     },
     {
       "model": "vivo S16e",
       "codename": "PD2239",
-      "model_sw_ver": "V2239A"
+      "model_sw_ver": "V2239A",
+      "default_sw_version": "13.1.1.1.W10"
     },
     {
       "model": "vivo S17",
       "codename": "PD2283",
-      "model_sw_ver": "V2283A"
+      "model_sw_ver": "V2283A",
+      "default_sw_version": "13.0.7.1.W10"
     },
     {
       "model": "vivo S17t",
@@ -595,12 +606,14 @@
     {
       "model": "vivo S17 Pro",
       "codename": "PD2284",
-      "model_sw_ver": "V2284A"
+      "model_sw_ver": "V2284A",
+      "default_sw_version": "13.0.3.5.W10"
     },
     {
       "model": "vivo S17e",
       "codename": "PD2285",
-      "model_sw_ver": "V2285A"
+      "model_sw_ver": "V2285A",
+      "default_sw_version": "13.0.6.11.W10"
     },
     {
       "model": "vivo S18",
@@ -629,7 +642,8 @@
     {
       "model": "vivo S19 Pro",
       "codename": "PD2362",
-      "model_sw_ver": "V2362A"
+      "model_sw_ver": "V2362A",
+      "default_sw_version": "14.0.7.1.W10"
     },
     {
       "model": "vivo S20",
@@ -640,7 +654,8 @@
     {
       "model": "vivo S20 Pro",
       "codename": "PD2430",
-      "model_sw_ver": "V2430A"
+      "model_sw_ver": "V2430A",
+      "default_sw_version": "15.0.3.2.W10"
     },
     {
       "model": "vivo S30",
@@ -657,7 +672,8 @@
     {
       "model": "vivo S50",
       "codename": "PD2528",
-      "model_sw_ver": "V2528A"
+      "model_sw_ver": "V2528A",
+      "default_sw_version": "16.0.6.1.W10"
     },
     {
       "model": "vivo S50 Pro mini",
@@ -668,12 +684,14 @@
     {
       "model": "vivo S60",
       "codename": "PD2571",
-      "model_sw_ver": "V2571A"
+      "model_sw_ver": "V2571A",
+      "default_sw_version": "16.0.4.4.W10"
     },
     {
       "model": "vivo S60 元气版",
       "codename": "PD2572",
-      "model_sw_ver": "V2572A"
+      "model_sw_ver": "V2572A",
+      "default_sw_version": "16.1.14.4.W10"
     }
   ],
   "Y 系列": [
@@ -760,7 +778,8 @@
     {
       "model": "vivo Y12",
       "codename": "PD2317",
-      "model_sw_ver": "V2317A"
+      "model_sw_ver": "V2317A",
+      "default_sw_version": "13.0.5.7.W10"
     },
     {
       "model": "vivo Y30",
@@ -835,7 +854,8 @@
     {
       "model": "vivo Y33t",
       "codename": "PD2317",
-      "model_sw_ver": "V2317A"
+      "model_sw_ver": "V2317A",
+      "default_sw_version": "13.0.5.7.W10"
     },
     {
       "model": "vivo Y35 5G",
@@ -846,7 +866,8 @@
     {
       "model": "vivo Y35+ 5G",
       "codename": "PD2279",
-      "model_sw_ver": "V2279A"
+      "model_sw_ver": "V2279A",
+      "default_sw_version": "13.0.14.1.W10"
     },
     {
       "model": "vivo Y36 5G",
@@ -857,22 +878,26 @@
     {
       "model": "vivo Y36t",
       "codename": "PD2327",
-      "model_sw_ver": "V2327A"
+      "model_sw_ver": "V2327A",
+      "default_sw_version": "14.0.14.10.W10"
     },
     {
       "model": "vivo Y36c 5G",
       "codename": "PD2357",
-      "model_sw_ver": "V2357A"
+      "model_sw_ver": "V2357A",
+      "default_sw_version": "14.0.7.7.W10"
     },
     {
       "model": "vivo Y37 5G",
       "codename": "PD2357",
-      "model_sw_ver": "V2357A"
+      "model_sw_ver": "V2357A",
+      "default_sw_version": "14.0.7.7.W10"
     },
     {
       "model": "vivo Y37m 5G",
       "codename": "PD2357",
-      "model_sw_ver": "V2357EA"
+      "model_sw_ver": "V2357EA",
+      "default_sw_version": "14.0.7.7.W10"
     },
     {
       "model": "vivo Y37 Pro 5G",
@@ -899,42 +924,50 @@
     {
       "model": "vivo Y37t 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y37+ 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50i 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50e 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50s 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50m 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443BA"
+      "model_sw_ver": "V2443BA",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y50c 5G",
       "codename": "PD2443",
-      "model_sw_ver": "V2443BA"
+      "model_sw_ver": "V2443BA",
+      "default_sw_version": "15.0.21.1.W10"
     },
     {
       "model": "vivo Y51s 5G",
@@ -995,7 +1028,8 @@
     {
       "model": "vivo Y55t 5G",
       "codename": "PD2279",
-      "model_sw_ver": "V2279A"
+      "model_sw_ver": "V2279A",
+      "default_sw_version": "13.0.14.1.W10"
     },
     {
       "model": "vivo Y60 5G",
@@ -1094,37 +1128,44 @@
     {
       "model": "vivo Y77t 5G",
       "codename": "PD2278",
-      "model_sw_ver": "V2278A"
+      "model_sw_ver": "V2278A",
+      "default_sw_version": "13.0.18.1.W10"
     },
     {
       "model": "vivo Y78 5G",
       "codename": "PD2278",
-      "model_sw_ver": "V2278A"
+      "model_sw_ver": "V2278A",
+      "default_sw_version": "13.0.18.1.W10"
     },
     {
       "model": "vivo Y78m 5G",
       "codename": "PD2278",
-      "model_sw_ver": "V2278A"
+      "model_sw_ver": "V2278A",
+      "default_sw_version": "13.0.18.1.W10"
     },
     {
       "model": "vivo Y78+ 5G",
       "codename": "PD2271",
-      "model_sw_ver": "V2271A"
+      "model_sw_ver": "V2271A",
+      "default_sw_version": "13.0.4.9.W10"
     },
     {
       "model": "vivo Y78 (t1) 5G",
       "codename": "PD2279",
-      "model_sw_ver": "V2279A"
+      "model_sw_ver": "V2279A",
+      "default_sw_version": "13.0.14.1.W10"
     },
     {
       "model": "vivo Y78m (t1) 5G",
       "codename": "PD2279",
-      "model_sw_ver": "V2279A"
+      "model_sw_ver": "V2279A",
+      "default_sw_version": "13.0.14.1.W10"
     },
     {
       "model": "vivo Y78t 5G",
       "codename": "PD2312",
-      "model_sw_ver": "V2312BA"
+      "model_sw_ver": "V2312BA",
+      "default_sw_version": "13.0.6.5.W10"
     },
     {
       "model": "vivo Y81",
@@ -1209,22 +1250,26 @@
     {
       "model": "vivo Y100 5G",
       "codename": "PD2313",
-      "model_sw_ver": "V2313A"
+      "model_sw_ver": "V2313A",
+      "default_sw_version": "13.0.7.4.W10"
     },
     {
       "model": "vivo Y100t 5G",
       "codename": "PD2314",
-      "model_sw_ver": "V2314DA"
+      "model_sw_ver": "V2314DA",
+      "default_sw_version": "13.0.7.1.W10"
     },
     {
       "model": "vivo Y100i 5G",
       "codename": "PD2279",
-      "model_sw_ver": "V2279A"
+      "model_sw_ver": "V2279A",
+      "default_sw_version": "13.0.14.1.W10"
     },
     {
       "model": "vivo Y100i 长续航版 5G",
       "codename": "PD2312",
-      "model_sw_ver": "V2312BA"
+      "model_sw_ver": "V2312BA",
+      "default_sw_version": "13.0.6.5.W10"
     },
     {
       "model": "vivo Y100+ 5G",
@@ -1247,17 +1292,20 @@
     {
       "model": "vivo Y200 5G",
       "codename": "PD2343",
-      "model_sw_ver": "V2343A"
+      "model_sw_ver": "V2343A",
+      "default_sw_version": "14.0.7.2.W10"
     },
     {
       "model": "vivo Y200 GT 5G",
       "codename": "PD2361",
-      "model_sw_ver": "V2361GA"
+      "model_sw_ver": "V2361GA",
+      "default_sw_version": "14.0.6.7.W10"
     },
     {
       "model": "vivo Y200 Pro 企业定制版",
       "codename": "PD2361",
-      "model_sw_ver": "V2361GA"
+      "model_sw_ver": "V2361GA",
+      "default_sw_version": "14.0.6.7.W10"
     },
     {
       "model": "vivo Y200t 5G",
@@ -1280,7 +1328,8 @@
     {
       "model": "vivo Y300i 5G",
       "codename": "PD2444",
-      "model_sw_ver": "V2444A"
+      "model_sw_ver": "V2444A",
+      "default_sw_version": "15.0.11.2.W10"
     },
     {
       "model": "vivo Y300 Pro",
@@ -1291,7 +1340,8 @@
     {
       "model": "vivo Y300 Pro+",
       "codename": "PD2456",
-      "model_sw_ver": "V2456A"
+      "model_sw_ver": "V2456A",
+      "default_sw_version": "15.0.6.8.W10"
     },
     {
       "model": "vivo Y300t",
@@ -1326,17 +1376,20 @@
     {
       "model": "vivo Y500i",
       "codename": "PD2531",
-      "model_sw_ver": "V2531A"
+      "model_sw_ver": "V2531A",
+      "default_sw_version": "16.0.6.13.W10"
     },
     {
       "model": "vivo Y500s",
       "codename": "PD2531",
-      "model_sw_ver": "V2531A"
+      "model_sw_ver": "V2531A",
+      "default_sw_version": "16.0.6.13.W10"
     },
     {
       "model": "vivo Y6",
       "codename": "PD2531",
-      "model_sw_ver": "V2531A"
+      "model_sw_ver": "V2531A",
+      "default_sw_version": "16.0.6.13.W10"
     },
     {
       "model": "vivo Y600 Pro",
@@ -1511,7 +1564,8 @@
     {
       "model": "vivo G3",
       "codename": "PD2443",
-      "model_sw_ver": "V2443A"
+      "model_sw_ver": "V2443A",
+      "default_sw_version": "15.0.21.1.W10"
     }
   ],
   "iQOO 旗舰系列": [
@@ -1600,12 +1654,14 @@
     {
       "model": "iQOO 11",
       "codename": "PD2243",
-      "model_sw_ver": "V2243A"
+      "model_sw_ver": "V2243A",
+      "default_sw_version": "13.0.4.1.W10"
     },
     {
       "model": "iQOO 11 Pro",
       "codename": "PD2254",
-      "model_sw_ver": "V2254A"
+      "model_sw_ver": "V2254A",
+      "default_sw_version": "13.0.4.7.W10"
     },
     {
       "model": "iQOO 11S",
@@ -1630,17 +1686,20 @@
     {
       "model": "iQOO 13",
       "codename": "PD2408",
-      "model_sw_ver": "V2408A"
+      "model_sw_ver": "V2408A",
+      "default_sw_version": "15.0.12.8.W10"
     },
     {
       "model": "iQOO 15",
       "codename": "PD2505",
-      "model_sw_ver": "V2505A"
+      "model_sw_ver": "V2505A",
+      "default_sw_version": "16.0.6.10.W10"
     },
     {
       "model": "iQOO 15 Ultra",
       "codename": "PD2546",
-      "model_sw_ver": "V2546A"
+      "model_sw_ver": "V2546A",
+      "default_sw_version": "16.0.3.9.W10"
     },
     {
       "model": "iQOO 15T",
@@ -1782,12 +1841,14 @@
     {
       "model": "iQOO Neo10 Pro",
       "codename": "PD2426",
-      "model_sw_ver": "V2426A"
+      "model_sw_ver": "V2426A",
+      "default_sw_version": "15.0.7.11.W10"
     },
     {
       "model": "iQOO Neo10 Pro+",
       "codename": "PD2463",
-      "model_sw_ver": "V2463A"
+      "model_sw_ver": "V2463A",
+      "default_sw_version": "15.0.7.2.W10"
     },
     {
       "model": "iQOO Neo11",
@@ -1842,27 +1903,32 @@
     {
       "model": "iQOO Z7",
       "codename": "PD2270",
-      "model_sw_ver": "V2270A"
+      "model_sw_ver": "V2270A",
+      "default_sw_version": "13.0.3.6.W10"
     },
     {
       "model": "iQOO Z7x",
       "codename": "PD2272",
-      "model_sw_ver": "V2272A"
+      "model_sw_ver": "V2272A",
+      "default_sw_version": "13.0.6.7.W10"
     },
     {
       "model": "iQOO Z7i",
       "codename": "PD2230",
-      "model_sw_ver": "V2230EA"
+      "model_sw_ver": "V2230EA",
+      "default_sw_version": "13.0.6.3.W10"
     },
     {
       "model": "iQOO Z8",
       "codename": "PD2314",
-      "model_sw_ver": "V2314A"
+      "model_sw_ver": "V2314A",
+      "default_sw_version": "13.0.7.1.W10"
     },
     {
       "model": "iQOO Z8x",
       "codename": "PD2312",
-      "model_sw_ver": "V2312A"
+      "model_sw_ver": "V2312A",
+      "default_sw_version": "13.0.6.5.W10"
     },
     {
       "model": "iQOO Z9",
@@ -1873,17 +1939,20 @@
     {
       "model": "iQOO Z9 Turbo",
       "codename": "PD2352",
-      "model_sw_ver": "V2352A"
+      "model_sw_ver": "V2352A",
+      "default_sw_version": "14.0.9.9.W10"
     },
     {
       "model": "iQOO Z9 Turbo 长续航版",
       "codename": "PD2352G",
-      "model_sw_ver": "V2352GA"
+      "model_sw_ver": "V2352GA",
+      "default_sw_version": "14.0.18.7.W10"
     },
     {
       "model": "iQOO Z9 Turbo+",
       "codename": "PD2417",
-      "model_sw_ver": "V2417A"
+      "model_sw_ver": "V2417A",
+      "default_sw_version": "14.0.6.5.W10"
     },
     {
       "model": "iQOO Z9x",
@@ -1900,7 +1969,8 @@
     {
       "model": "iQOO Z10 Turbo Pro",
       "codename": "PD2453",
-      "model_sw_ver": "V2453A"
+      "model_sw_ver": "V2453A",
+      "default_sw_version": "15.0.2.8.W10"
     },
     {
       "model": "iQOO Z10 Turbo+",
@@ -1911,22 +1981,26 @@
     {
       "model": "iQOO Z10x",
       "codename": "PD2445",
-      "model_sw_ver": "V2445A"
+      "model_sw_ver": "V2445A",
+      "default_sw_version": "15.0.9.2.W10"
     },
     {
       "model": "iQOO Z11 Turbo",
       "codename": "PD2536",
-      "model_sw_ver": "V2536A"
+      "model_sw_ver": "V2536A",
+      "default_sw_version": "16.0.4.5.W10"
     },
     {
       "model": "iQOO Z11",
       "codename": "PD2551",
-      "model_sw_ver": "V2551A"
+      "model_sw_ver": "V2551A",
+      "default_sw_version": "16.0.9.4.W10"
     },
     {
       "model": "iQOO Z11x",
       "codename": "PD2532",
-      "model_sw_ver": "V2532A"
+      "model_sw_ver": "V2532A",
+      "default_sw_version": "16.0.20.1.W10"
     }
   ],
   "iQOO U 系列": [
@@ -1973,7 +2047,8 @@
     {
       "model": "iQOO 16",
       "codename": "PD2606",
-      "model_sw_ver": "V2606A"
+      "model_sw_ver": "V2606A",
+      "default_sw_version": "17.0.11.4.W10"
     }
   ],
   "平板电脑": [
@@ -1985,12 +2060,14 @@
     {
       "model": "vivo Pad2",
       "codename": "DPD2221",
-      "model_sw_ver": "PA2373"
+      "model_sw_ver": "PA2373",
+      "default_sw_version": "13.0.10.10.W10"
     },
     {
       "model": "vivo Pad Air",
       "codename": "DPD2305",
-      "model_sw_ver": "PA2353"
+      "model_sw_ver": "PA2353",
+      "default_sw_version": "13.0.7.6.W10"
     },
     {
       "model": "vivo Pad3",
@@ -2001,7 +2078,8 @@
     {
       "model": "vivo Pad3 Pro",
       "codename": "DPD2329",
-      "model_sw_ver": "PA2473"
+      "model_sw_ver": "PA2473",
+      "default_sw_version": "14.0.10.23.W10"
     },
     {
       "model": "vivo Pad5",
@@ -2012,7 +2090,8 @@
     {
       "model": "vivo Pad5 Pro",
       "codename": "DPD2429",
-      "model_sw_ver": "PA2573"
+      "model_sw_ver": "PA2573",
+      "default_sw_version": "15.0.10.6.W10"
     },
     {
       "model": "vivo Pad5e",
@@ -2029,17 +2108,20 @@
     {
       "model": "vivo Pad6 Pro",
       "codename": "DPD2540",
-      "model_sw_ver": "PA2671"
+      "model_sw_ver": "PA2671",
+      "default_sw_version": "16.0.11.36.W10"
     },
     {
       "model": "iQOO Pad",
       "codename": "DPD2307",
-      "model_sw_ver": "iPA2375"
+      "model_sw_ver": "iPA2375",
+      "default_sw_version": "13.0.10.10.W10"
     },
     {
       "model": "iQOO Pad Air",
       "codename": "DPD2305",
-      "model_sw_ver": "iPA2451"
+      "model_sw_ver": "iPA2451",
+      "default_sw_version": "13.0.7.6.W10"
     },
     {
       "model": "iQOO Pad2",
@@ -2050,7 +2132,8 @@
     {
       "model": "iQOO Pad2 Pro",
       "codename": "DPD2329",
-      "model_sw_ver": "iPA2475"
+      "model_sw_ver": "iPA2475",
+      "default_sw_version": "14.0.10.23.W10"
     },
     {
       "model": "iQOO Pad5",
@@ -2061,7 +2144,8 @@
     {
       "model": "iQOO Pad5 Pro",
       "codename": "DPD2438",
-      "model_sw_ver": "iPA2575"
+      "model_sw_ver": "iPA2575",
+      "default_sw_version": "15.0.10.6.W10"
     },
     {
       "model": "iQOO Pad5e",
@@ -2072,7 +2156,8 @@
     {
       "model": "iQOO Pad6 Pro",
       "codename": "DPD2540",
-      "model_sw_ver": "iPA2673"
+      "model_sw_ver": "iPA2673",
+      "default_sw_version": "16.0.11.36.W10"
     }
   ],
   "穿戴设备": [
