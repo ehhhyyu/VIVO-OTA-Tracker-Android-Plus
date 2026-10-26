@@ -205,9 +205,11 @@ class VivoOtaClient(private val context: Context) {
         // 修复（同步自 Windows 版）：2025+ 新机型服务器只提供增量包（isFull=0），
         // 全量包查询恒返回 retcode=210。用户选择全量包但查询无更新时，
         // 自动改用增量包重试一次，避免误判"无更新"。
-        val rc = extractJsonStr(updateResponse, "retcode").toIntOrNull()
-        if (isFull && rc != null && rc != 0 && updateResponse.contains("210")) {
-            Log.i(TAG, "全量包无更新(retcode=$rc)，自动改增量包重试")
+        // 注意：retcode 是 JSON 数字字段，extractJsonStr（按引号切串）取不到，必须用数字正则；
+        // 且只接受恰为 210 的无更新码，不能用 contains("210") 子串匹配整段响应。
+        val rc = extractRetcode(updateResponse)
+        if (isFull && rc == 210) {
+            Log.i(TAG, "全量包无更新(retcode=210)，自动改增量包重试")
             p["isFull"] = 0
             val incParams = joinParams(p)
             val incResp = if (isTaste) sendTasteRequest(incParams, domain) else sendFreshEncryptedRequest(incParams, domain)
@@ -356,6 +358,10 @@ class VivoOtaClient(private val context: Context) {
         return json.substring(start, end)
     }
 
+    /** 提取 retcode（兼容 "retcode":210 与 "retcode":"210" 两种形态）；extractJsonStr 按引号切串取不到数字字段。 */
+    private fun extractRetcode(json: String): Int? =
+        Regex("\"retcode\"\\s*:\\s*\"?(-?\\d+)").find(json)?.groupValues?.get(1)?.toIntOrNull()
+
     private fun extractFirstAvailable(json: String, keys: List<String>): String {
         for (key in keys) {
             val value = extractJsonStr(json, key)
@@ -423,7 +429,7 @@ class VivoOtaClient(private val context: Context) {
                 .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
                 .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
             decoder.decode(java.nio.ByteBuffer.wrap(this)).toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // 严格 UTF-8 解码失败（GBK 编码的错误消息）→ 回退 GBK
             try {
                 String(this, java.nio.charset.Charset.forName("GBK"))

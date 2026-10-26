@@ -285,15 +285,13 @@ object VivoDeviceDatabase {
                     model = obj.getString("model"),
                     codename = obj.getString("codename"),
                     model_sw_ver = obj.getString("model_sw_ver"),
-                    // 修复（同步自 Windows 版经验）：内置 JSON 用 camelCase（defaultSwVersion），
-                    // 本地缓存序列化用下划线（default_sw_version），两处字段名不一致导致版本号读不到。
-                    // 这里两种都尝试，优先 camelCase，空则回退下划线。
-                    defaultSwVersion = obj.optString("defaultSwVersion", "")
-                        .ifEmpty { obj.optString("default_sw_version", "") },
-                    optionalSwVersions = listOfNotNull(
-                        obj.optJSONArray("optionalSwVersions"),
-                        obj.optJSONArray("optional_sw_versions")
-                    ).firstOrNull()?.let { a ->
+                    // ADR-003 D1：可选字段，缺失即空串。内置 JSON 与本地缓存（见 put 序列化）
+                    // 均只用下划线名，不需要兼容 camelCase。
+                    // 必须用 optString——getString 对缺字段会抛 JSONException，
+                    // 而 load() 无 try-catch，会导致整个机型库加载失败。
+                    defaultSwVersion = obj.optString("default_sw_version", ""),
+                    // 可选版本号数组，缺失即空列表。optJSONArray 缺字段返回 null，不会抛异常。
+                    optionalSwVersions = obj.optJSONArray("optional_sw_versions")?.let { a ->
                         List(a.length()) { i -> a.getString(i) }
                     } ?: emptyList()
                 ))

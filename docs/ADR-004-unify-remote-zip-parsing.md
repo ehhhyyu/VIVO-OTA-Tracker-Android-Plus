@@ -184,6 +184,10 @@ zip bomb 防护与更严的目录上限，VioletToolBox 提供了本仓库缺的
 > `Content-Range` 起点校验（防 Range 拼接错位）、416 区分、以及 `sessionId()` 会话号
 > （防止 `ZipByteSource` 持有上一次的条目数据把旧偏移读成新包内容）。
 
+> **注（v1.8.0）**：以下两处离线验证所用的一次性脚本
+> `verify_adr004_payload_locate.py` / `verify_adr004_p2.py` 已随仓库清理删除，
+> 表格保留作为当次验证的历史记录。
+
 **离线验证**：`verify_adr004_payload_locate.py`（8/8 通过），对照 OLD/NEW 两组同构实现：
 
 | 用例 | 结果 |

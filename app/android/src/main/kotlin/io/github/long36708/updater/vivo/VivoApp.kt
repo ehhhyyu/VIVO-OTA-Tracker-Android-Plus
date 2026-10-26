@@ -585,11 +585,11 @@ private fun CodenameInfoCard(state: VivoOtaUiState) {
 @Composable
 private fun VersionInputCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
     // ADR-003 D5：手动模式下机型下拉是隐藏的，不存在「选中机型」语境，不提供推荐版本。
-    // 此处直接查 database 与 ModelDropdownCard 的既有写法保持一致。
-    val recommended = if (state.manualMode) "" else {
-        VivoDeviceDatabase.devicesOf(state.selectedSeries)
-            .getOrNull(state.selectedModelIndex)?.defaultSwVersion.orEmpty()
+    // 此处直接查 database 与 ModelDropdownCard 的既有写法保持一致；selected 只查一次。
+    val selected = if (state.manualMode) null else {
+        VivoDeviceDatabase.devicesOf(state.selectedSeries).getOrNull(state.selectedModelIndex)
     }
+    val recommended = selected?.defaultSwVersion.orEmpty()
     val recommendedTrim = recommended.trim()
     // 占位版本（x.x.x 等非标准格式）判定：不存在"获取更新链接"的能力
     val isPlaceholder = isPlaceholderVersion(recommendedTrim)
@@ -602,10 +602,7 @@ private fun VersionInputCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel)
         !isPlaceholder &&
         recommendedTrim != state.softwareVersion.trim()
     // 可选版本号数组下拉：仅当机型配置了 optional_sw_versions 才出现
-    val optional = if (state.manualMode) emptyList() else {
-        VivoDeviceDatabase.devicesOf(state.selectedSeries)
-            .getOrNull(state.selectedModelIndex)?.optionalSwVersions ?: emptyList()
-    }
+    val optional = selected?.optionalSwVersions ?: emptyList()
     // 当前版本号若在数组中则高亮对应项，否则默认 0（仅用于下拉初始定位）
     val optionalIndex = optional.indexOf(state.softwareVersion).takeIf { it >= 0 } ?: 0
     Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
@@ -873,14 +870,20 @@ private fun ErrorCard(error: String) {
     }
 }
 
-/** 占位版本判定：x.x.x 等非标准格式（空/纯 x/缺 W 分支等）视为不支持获取更新链接。 */
+/** 占位版本判定用正则（文件级常量，避免每次重组重新编译）。 */
+private val PlaceholderXVersionRegex = Regex("^[xX](\\s*[.\\-]\\s*[xX])*$")
+// 真实版本号格式：2~4 段数字，.Wxx 后缀可选。
+// 后缀必须可选：vivo S7（7.11.4）、iQOO Z5x（6.13.1）等老机型就是无 W 后缀的合法版本，
+// 若强制 .W 会把已配置的机型误报为「不支持获取更新」。
+private val RealSwVersionRegex = Regex("^\\d+\\.\\d+(\\.\\d+){1,2}(\\.W\\d+)?$")
+
+/** 占位版本判定：空串、纯 x 占位（x.x.x）或非版本号形态（如「待确认」）视为未配置。 */
 private fun isPlaceholderVersion(v: String): Boolean {
     val t = v.trim()
     if (t.isEmpty()) return false
     // 纯 x / X.x 占位（大小写、任意段、可选空格）
-    if (Regex("^[xX](\\s*[.\\-]\\s*[xX])*$").matches(t)) return true
-    // 标准 OTA 版本格式：数字.数字.数字[.数字].W数字（如 15.0.7.11.W10）
-    return !Regex("^\\d+\\.\\d+\\.\\d+(\\.\\d+)?\\.W\\d+$").matches(t)
+    if (PlaceholderXVersionRegex.matches(t)) return true
+    return !RealSwVersionRegex.matches(t)
 }
 
 /** 链式跳的终止说明文案（普通函数：复制回调等非组合上下文也要能用）。 */
