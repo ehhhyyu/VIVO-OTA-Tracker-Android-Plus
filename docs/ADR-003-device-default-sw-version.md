@@ -130,6 +130,14 @@ UI 上置于 `VersionInputCard` 中 TextField 下方，与现有 ⚠ 加密库�
 新增字符串资源 `sw_version_use_recommended`（用推荐版本 / Use recommended），
 同时加入 `values/` 与 `values-zh-rCN/`。
 
+> **实现修订（v1.8.0，PR #1）**：显示条件在 1-3 之外新增第 4 条——
+> 推荐值须**非占位**（见「不支持提醒」节的占位判定）。同时新增：机型未配置
+> `default_sw_version` 或推荐值为占位形态时，在版本号输入框下方以红色 ⚠ 提示
+> 「不支持获取更新」（字符串 `sw_version_no_default` / `sw_version_unsupported`）。
+> 占位判定（`isPlaceholderVersion`，VivoApp.kt）：纯 x 形态（x、x.x、X-X 等）
+> 或不符合「2~4 段数字版本号」形态的值；`.Wxx` 后缀**可选**——vivo S7（7.11.4）、
+> iQOO Z5x（6.13.1）等老机型的无后缀版本号是合法配置，不得误报为占位。
+
 ### D6：历史回填视为「自定义」
 
 `fillHistoryBack()` 回填历史查询条件时，应置 `isSwVersionCustom = true`。
@@ -152,6 +160,12 @@ UI 上置于 `VersionInputCard` 中 TextField 下方，与现有 ⚠ 加密库�
 - 字段为可选，允许长期只覆盖部分机型，未覆盖者行为退化为现状（手动输入）。
 - 首批仅填充「vivo X200 Pro mini」用于验证闭环，值沿用现有硬编码默认值 `15.0.33.7.W10`。
 - **该值需以真机"设置 → 关于手机 → 版本号"核对后为准**，确认为准前不得批量填充其他机型。
+
+> **执行修订（v1.8.0，PR #1）**：外部贡献者已将 `default_sw_version` 批量填充至
+> 174 条（含 `optional_sw_versions` 30 条），超出本 ADR 原本"首批单机型验证闭环"
+> 的限制。数据主要来自社区整理的公开固件版本，未经逐台真机核对——若查询返回
+> retcode=210/无更新，应优先怀疑所填版本号过期而非机型不支持，核对后修正 JSON。
+> 占位/未配置机型的提醒机制见 D5 实现修订节。
 
 > **数据疑点（待核实，不在本 ADR 改动范围内）**
 > `vivo_devices.json` 中「vivo X200 Pro mini」当前配置为 `PD2419` / `V2419A`。

@@ -20,7 +20,7 @@
 
 本项目**没有 JVM 单元测试基建**（全仓 0 个 `*Test*.kt`，无 `src/test` 目录）。因此不引入 JUnit/Robolectric 基建（超出本需求范围，YAGNI），沿用项目既有惯例：
 
-- **同构验证脚本**：根目录 `verify_adr003_sw_version.py`，与 `verify_adr002_ui_logic.py` 同一模式，把纯逻辑用 Python 重写后断言。用于锁住解析矩阵与状态机，防回归。
+- **同构验证脚本**：根目录 `verify_adr003_sw_version.py`（仓库既有的同构验证模式），把纯逻辑用 Python 重写后断言。用于锁住解析矩阵与状态机，防回归。
 - **编译验证**：`gradlew.bat :app:android:assembleDebug --no-configuration-cache`
 - **冒烟验证**：真机手动验证清单（Task 6 给出）
 
@@ -373,7 +373,7 @@ git commit -m "feat: 版本号输入框增加「用推荐版本」刷回按钮"
 2. 填充状态机：脏标记 is_sw_version_custom 的流转与覆盖时机
 3. 未配置机型的「不填充」语义：保持原值，不清空
 
-本项目无 JVM 单测基建，沿用 verify_adr002_ui_logic.py 的同构验证方式。
+本项目无 JVM 单测基建，沿用仓库既有的同构验证方式（Python 复刻纯逻辑后断言）。
 """
 
 DEFAULT_SW = "15.0.33.7.W10"
