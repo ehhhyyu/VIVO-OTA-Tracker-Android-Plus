@@ -21,6 +21,8 @@
 
     <!-- Version input -->
     <string name="label_sw_version">系统版本号 (例如: 16.1.16.5.W10)</string>
+    <string name="sw_version_unsupported">该机型为占位版本（%1$s），暂不支持获取更新链接，请在官方渠道确认实际版本号</string>
+    <string name="sw_version_no_default">该机型未配置默认版本号，可能无法获取更新链接，请在官方渠道确认版本号后手动查询</string>
     <string name="hint_sw_version">加密库不支持早期旧设备的 x.x.x 版本号获取</string>
     <string name="sw_version_optional">可选版本</string>
     <string name="sw_version_use_recommended">用推荐版本</string>
@@ -80,6 +82,7 @@
     <string name="chain_limit">已达跳数上限，链路截断。</string>
     <string name="chain_loop">已停止：检测到版本回环。</string>
     <string name="chain_copy">复制路径</string>
+    <string name="chain_copy_link">复制链接</string>
     <string name="chain_copy_header">从 %1$s 起的升级路径：</string>
     <string name="chain_query_target">查此版本</string>
 

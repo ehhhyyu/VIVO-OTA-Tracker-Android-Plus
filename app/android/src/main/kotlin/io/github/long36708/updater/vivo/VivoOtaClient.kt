@@ -136,7 +136,9 @@ class VivoOtaClient(private val context: Context) {
         } else {
             p["romVersion"] = "Funtouch $androidVersion.0"
             p["occurTime"] = ts
-            p["vgcCu"] = "NULL"
+            // 修复（同步自 Windows 版）：平板分支 vgcCu 必须为 "V000"，
+            // 传 "NULL" 时服务器恒定返回 retcode=210（无更新），平板无法查询。
+            p["vgcCu"] = "V000"
             p["battery"] = 69
             p["sf"] = 0
             p["si"] = ""
@@ -195,9 +197,23 @@ class VivoOtaClient(private val context: Context) {
             Log.d(TAG, "${channel.value} state: $stateJson")
         }
 
-        val updateResponse = if (isTaste) sendTasteRequest(rawParams, domain) else sendFreshEncryptedRequest(rawParams, domain)
+        var updateResponse = if (isTaste) sendTasteRequest(rawParams, domain) else sendFreshEncryptedRequest(rawParams, domain)
         if (updateResponse.startsWith("[Error]")) {
             throw RuntimeException(updateResponse)
+        }
+
+        // 修复（同步自 Windows 版）：2025+ 新机型服务器只提供增量包（isFull=0），
+        // 全量包查询恒返回 retcode=210。用户选择全量包但查询无更新时，
+        // 自动改用增量包重试一次，避免误判"无更新"。
+        val rc = extractJsonStr(updateResponse, "retcode").toIntOrNull()
+        if (isFull && rc != null && rc != 0 && updateResponse.contains("210")) {
+            Log.i(TAG, "全量包无更新(retcode=$rc)，自动改增量包重试")
+            p["isFull"] = 0
+            val incParams = joinParams(p)
+            val incResp = if (isTaste) sendTasteRequest(incParams, domain) else sendFreshEncryptedRequest(incParams, domain)
+            if (!incResp.startsWith("[Error]")) {
+                updateResponse = incResp
+            }
         }
 
         return parseResult(updateResponse, isPhone, modelSwVer, codename, swVersion, channel, domain)
@@ -395,7 +411,26 @@ class VivoOtaClient(private val context: Context) {
         val encryptedBody = extractEncryptedBody(fullPackage)
         val decrypted = VivoCrypto.decrypt(encryptedBody)
             ?: throw RuntimeException("Decryption failed")
-        return String(decrypted, StandardCharsets.UTF_8)
+        // 修复（同步自 Windows 版）：服务器错误消息（如 retcode=210 的 "无更新"）是 GBK 编码，
+        // 直接按 UTF-8 解码会乱码。先做严格 UTF-8 校验，失败再回退 GBK。
+        return decrypted.decodeWithFallback()
+    }
+
+    /** 严格 UTF-8 解码，失败回退 GBK（Android 自带 Charset GBK 支持）。 */
+    private fun ByteArray.decodeWithFallback(): String {
+        return try {
+            val decoder = StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
+            decoder.decode(java.nio.ByteBuffer.wrap(this)).toString()
+        } catch (e: Exception) {
+            // 严格 UTF-8 解码失败（GBK 编码的错误消息）→ 回退 GBK
+            try {
+                String(this, java.nio.charset.Charset.forName("GBK"))
+            } catch (_: Exception) {
+                String(this, StandardCharsets.ISO_8859_1)
+            }
+        }
     }
 
     private fun buildProtocolPackage(type: Int, keyVersion: Int, token: String, data: ByteArray): ByteArray {

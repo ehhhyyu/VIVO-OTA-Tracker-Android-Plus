@@ -590,9 +590,17 @@ private fun VersionInputCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel)
         VivoDeviceDatabase.devicesOf(state.selectedSeries)
             .getOrNull(state.selectedModelIndex)?.defaultSwVersion.orEmpty()
     }
-    // 三者全满足才显示：非手动模式、机型已配置、且推荐值与当前值不同
-    val showRecommended = recommended.isNotBlank() &&
-        recommended.trim() != state.softwareVersion.trim()
+    val recommendedTrim = recommended.trim()
+    // 占位版本（x.x.x 等非标准格式）判定：不存在"获取更新链接"的能力
+    val isPlaceholder = isPlaceholderVersion(recommendedTrim)
+    // 不支持获取更新的机型：内置版本为空（未配置）或为占位/非标准格式
+    // （这类机型查不到有效更新链接，需要提示用户）
+    val isUnsupported = !state.manualMode &&
+        (recommendedTrim.isEmpty() || isPlaceholder)
+    // 三者全满足才显示：非手动模式、机型已配置、推荐值非占位且与当前值不同
+    val showRecommended = recommendedTrim.isNotBlank() &&
+        !isPlaceholder &&
+        recommendedTrim != state.softwareVersion.trim()
     // 可选版本号数组下拉：仅当机型配置了 optional_sw_versions 才出现
     val optional = if (state.manualMode) emptyList() else {
         VivoDeviceDatabase.devicesOf(state.selectedSeries)
@@ -611,6 +619,25 @@ private fun VersionInputCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel)
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
+            // 机型不支持获取更新（版本为空或占位 x.x.x 等非标准格式）时，在版本号输入框处给出醒目提醒
+            if (isUnsupported) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("\u26A0", fontSize = 13.sp, color = Color(0xFFE53935))
+                    Text(
+                        text = if (recommendedTrim.isEmpty()) {
+                            stringResource(R.string.sw_version_no_default)
+                        } else {
+                            stringResource(R.string.sw_version_unsupported, recommendedTrim)
+                        },
+                        fontSize = 11.sp,
+                        color = Color(0xFFE53935),
+                        modifier = Modifier.padding(start = 4.dp).weight(1f)
+                    )
+                }
+            }
             if (optional.isNotEmpty()) {
                 OverlayDropdownPreference(
                     title = stringResource(R.string.sw_version_optional),
@@ -846,6 +873,16 @@ private fun ErrorCard(error: String) {
     }
 }
 
+/** 占位版本判定：x.x.x 等非标准格式（空/纯 x/缺 W 分支等）视为不支持获取更新链接。 */
+private fun isPlaceholderVersion(v: String): Boolean {
+    val t = v.trim()
+    if (t.isEmpty()) return false
+    // 纯 x / X.x 占位（大小写、任意段、可选空格）
+    if (Regex("^[xX](\\s*[.\\-]\\s*[xX])*$").matches(t)) return true
+    // 标准 OTA 版本格式：数字.数字.数字[.数字].W数字（如 15.0.7.11.W10）
+    return !Regex("^\\d+\\.\\d+\\.\\d+(\\.\\d+)?\\.W\\d+$").matches(t)
+}
+
 /** 链式跳的终止说明文案（普通函数：复制回调等非组合上下文也要能用）。 */
 private fun chainTerminalText(context: Context, terminal: ChainTerminal): String = when (terminal) {
     ChainTerminal.CONTINUES -> ""
@@ -992,6 +1029,23 @@ private fun ChainPathCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
                                                 .clickable {
                                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                                     viewModel.queryChainTarget(upd)
+                                                }
+                                        )
+                                    }
+                                    // 升级路径旁复制下载直链（每次升级一条）
+                                    val dl = res?.downloadUrl.orEmpty()
+                                    if (!state.isChainLoading && dl.isNotEmpty() && dl != "(Not found)") {
+                                        Text(
+                                            text = stringResource(R.string.chain_copy_link),
+                                            fontSize = 12.sp,
+                                            color = MiuixTheme.colorScheme.primary,
+                                            modifier = Modifier
+                                                .padding(start = 8.dp)
+                                                .clickable {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                                    cb.setPrimaryClip(ClipData.newPlainText("downloadLink", dl))
+                                                    Toast.makeText(context, copiedMsg, Toast.LENGTH_SHORT).show()
                                                 }
                                         )
                                     }
