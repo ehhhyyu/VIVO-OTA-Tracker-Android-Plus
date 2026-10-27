@@ -1,5 +1,7 @@
 package io.github.long36708.updater.vivo
 
+import io.github.long36708.updater.AppUpdateInfo
+
 /** IMEI 输入框当前值的来源，决定卡片里显示的提示文案。 */
 enum class ImeiSource {
     /** 自动读取到的本机 IMEI。 */
@@ -108,5 +110,11 @@ data class VivoOtaUiState(
     val historySelectionMode: Boolean = false,
     val selectedHistory: Set<Long> = emptySet(),
     val toastMessage: String? = null,
-    val changelogContent: String? = null
+    val changelogContent: String? = null,
+    // 应用自更新检测（GitHub Releases）：info 仅在发现更新时非空；
+    // updateBannerVisible 由 ViewModel 结合「已忽略版本」计算，与 updateInfo 分离以支持横幅重开。
+    val updateInfo: AppUpdateInfo? = null,
+    val isCheckingUpdate: Boolean = false,
+    val updateCheckFailed: Boolean = false,
+    val updateBannerVisible: Boolean = false
 )

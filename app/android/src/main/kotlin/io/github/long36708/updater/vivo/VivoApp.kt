@@ -158,6 +158,8 @@ fun VivoApp(viewModel: VivoOtaViewModel = viewModel()) {
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                item { UpdateBannerCard(state, viewModel) }
+
                 item { CryptoStatusCard(state.cryptoReady) }
 
                 item { ManualModeCard(state, viewModel) }
@@ -257,7 +259,7 @@ fun VivoApp(viewModel: VivoOtaViewModel = viewModel()) {
             }
         }
 
-        if (showAbout) AboutDialog(onDismiss = { showAbout = false })
+        if (showAbout) AboutDialog(onDismiss = { showAbout = false }, state = state, viewModel = viewModel)
         if (showPayloadDumper) {
             PayloadDumperScreen(
                 viewModel = payloadViewModel,
@@ -1581,9 +1583,54 @@ private fun ConfirmDeleteDialog(
     }
 }
 
+/** 发现新版本时的顶部横幅：「去更新」跳浏览器 Release 页，「忽略」记住该版本不再弹。 */
 @Composable
-private fun AboutDialog(onDismiss: () -> Unit) {
+private fun UpdateBannerCard(state: VivoOtaUiState, viewModel: VivoOtaViewModel) {
     val context = LocalContext.current
+    val info = state.updateInfo ?: return
+    AnimatedVisibility(
+        visible = state.updateBannerVisible,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut()
+    ) {
+        Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("\u26A0", fontSize = 13.sp, color = Color(0xFFFF9800))
+                Text(
+                    text = stringResource(R.string.update_available, info.latestVersion),
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 4.dp).weight(1f)
+                )
+                Text(
+                    text = stringResource(R.string.update_go),
+                    fontSize = 12.sp,
+                    color = MiuixTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clickable {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(info.releaseUrl)))
+                        }
+                        .padding(start = 8.dp)
+                )
+                Text(
+                    text = stringResource(R.string.update_dismiss),
+                    fontSize = 12.sp,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                    modifier = Modifier
+                        .clickable { viewModel.dismissUpdateBanner() }
+                        .padding(start = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AboutDialog(onDismiss: () -> Unit, state: VivoOtaUiState, viewModel: VivoOtaViewModel) {    val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val copiedMsg = stringResource(R.string.copied)
     Dialog(onDismissRequest = onDismiss) {
@@ -1615,6 +1662,35 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                         fontSize = 13.sp,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                     )
+                    // 应用自更新检测入口：有更新 → 可点跳转 Release；检查中/失败/空闲三种状态各有反馈
+                    val updateInfo = state.updateInfo
+                    when {
+                        state.isCheckingUpdate -> Text(
+                            stringResource(R.string.update_checking),
+                            fontSize = 12.sp,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
+                        )
+                        updateInfo != null -> Text(
+                            text = stringResource(R.string.update_available, updateInfo.latestVersion),
+                            color = MiuixTheme.colorScheme.primary,
+                            fontSize = 12.sp,
+                            modifier = Modifier.clickable {
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(updateInfo.releaseUrl)))
+                            }
+                        )
+                        state.updateCheckFailed -> Text(
+                            stringResource(R.string.update_check_failed),
+                            fontSize = 12.sp,
+                            color = Color(0xFFE53935),
+                            modifier = Modifier.clickable { viewModel.checkAppUpdate() }
+                        )
+                        else -> Text(
+                            stringResource(R.string.update_check),
+                            color = MiuixTheme.colorScheme.primary,
+                            fontSize = 12.sp,
+                            modifier = Modifier.clickable { viewModel.checkAppUpdate() }
+                        )
+                    }
                     Spacer(modifier = Modifier.height(12.dp))
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(10.dp))

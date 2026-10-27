@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.long36708.updater.AndroidAppContext
+import io.github.long36708.updater.AppUpdateChecker
+import io.github.long36708.updater.AppUpdateCheckResult
 import io.github.long36708.updater.R
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +29,11 @@ class VivoOtaViewModel : ViewModel() {
     companion object {
         /** 链式查询跳数上限：防服务器返回异常导致无限跳。 */
         private const val MAX_CHAIN_HOPS = 15
+
+        /** 自更新检查节流间隔：24h。 */
+        private const val UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000L
+        private const val KEY_UPDATE_CHECK_TS = "update_check_ts"
+        private const val KEY_UPDATE_DISMISSED_TAG = "update_dismissed_tag"
     }
 
     private val _uiState = MutableStateFlow(VivoOtaUiState())
@@ -47,6 +54,7 @@ class VivoOtaViewModel : ViewModel() {
         applyDefaultSelection()
         refreshDevices()
         loadDeviceImei()
+        maybeCheckAppUpdate()
     }
 
     /** 启动 / 手动刷新时读取本机 IMEI；读不到则退化为随机值，保证请求里的 imei 字段始终有效。 */
@@ -109,6 +117,71 @@ class VivoOtaViewModel : ViewModel() {
         val seriesList = VivoDeviceDatabase.series
         if (seriesList.isEmpty()) return false
         return st.selectedSeries !in seriesList || st.selectedCodename.isEmpty()
+    }
+
+    // ------------------------------------------------------------------
+    // 应用自更新检测（GitHub Releases）
+    // ------------------------------------------------------------------
+
+    /**
+     * 启动时静默检查：距上次检查不足 24h 则跳过。
+     * 自动检查完全静默——失败只打日志，发现更新也仅亮横幅，不弹 Toast。
+     */
+    private fun maybeCheckAppUpdate() {
+        val last = prefs.getLong(KEY_UPDATE_CHECK_TS, 0L)
+        if (System.currentTimeMillis() - last < UPDATE_CHECK_INTERVAL_MS) return
+        viewModelScope.launch(Dispatchers.IO) { runUpdateCheck(manual = false) }
+    }
+
+    /** 关于页手动「检查更新」：跳过节流，结果通过 Toast / 关于页状态反馈。 */
+    fun checkAppUpdate() {
+        _uiState.update { it.copy(isCheckingUpdate = true, updateCheckFailed = false) }
+        viewModelScope.launch(Dispatchers.IO) {
+            runUpdateCheck(manual = true)
+        }
+    }
+
+    private suspend fun runUpdateCheck(manual: Boolean) {
+        prefs.edit().putLong(KEY_UPDATE_CHECK_TS, System.currentTimeMillis()).apply()
+        when (val result = AppUpdateChecker.check()) {
+            is AppUpdateCheckResult.Success -> {
+                val info = result.info
+                _uiState.update {
+                    it.copy(
+                        updateInfo = info,
+                        isCheckingUpdate = false,
+                        updateCheckFailed = false,
+                        // 已忽略的版本不重开横幅；发布更新的 tag 后自然重现
+                        updateBannerVisible = info != null &&
+                            info.latestVersion != prefs.getString(KEY_UPDATE_DISMISSED_TAG, null),
+                        // 手动检查且无更新时给出 Toast 反馈；自动检查不碰 toast，避免清掉用户刚触发的提示
+                        toastMessage = if (manual && info == null) {
+                            ctxApplication().getString(R.string.update_latest)
+                        } else {
+                            it.toastMessage
+                        }
+                    )
+                }
+            }
+            AppUpdateCheckResult.Failed -> {
+                Log.w("VivoOtaViewModel", "App update check failed (manual=$manual)")
+                _uiState.update {
+                    it.copy(
+                        isCheckingUpdate = false,
+                        updateCheckFailed = manual
+                    )
+                }
+            }
+        }
+    }
+
+    /** 横幅「忽略」：记住被忽略的版本号，同版本不再弹出。 */
+    fun dismissUpdateBanner() {
+        val tag = _uiState.value.updateInfo?.latestVersion
+        if (tag != null) {
+            prefs.edit().putString(KEY_UPDATE_DISMISSED_TAG, tag).apply()
+        }
+        _uiState.update { it.copy(updateBannerVisible = false) }
     }
 
     private fun ctxApplication(): Context =

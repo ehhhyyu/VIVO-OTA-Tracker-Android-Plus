@@ -111,6 +111,16 @@
     <string name="about_reference">Reference Project</string>
     <string name="about_source">Source Repository</string>
     <string name="about_disclaimer">This app is for educational and research purposes only.</string>
+
+    <!-- App self-update check (GitHub Releases) -->
+    <string name="update_available">New version v%1$s available</string>
+    <string name="update_go">Update</string>
+    <string name="update_dismiss">Dismiss</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_latest">Already up to date</string>
+    <string name="update_check_failed">Check failed, tap to retry</string>
+
     <string name="btn_close">Close</string>
 
     <!-- Toast -->
